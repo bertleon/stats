@@ -6,16 +6,42 @@ class Chart extends Component {
     super(props);
     this.state = {
       chartData: {
-        labels: ["bertleon", "paleonluna"],
+        labels: [],
         datasets: [
           {
             label: "Play Time",
-            data: [20, 30],
+            data: [],
           },
         ],
-        backgroundColor: ["rgba(255,99,133,0.6)", "rgba(30,255,100,0.6)"],
       },
     };
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:8000/api/statsAPI")
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        var names = [];
+        var times = [];
+        data.forEach((element) => {
+          names.push(element.username);
+          times.push(element.playtime);
+        });
+        this.setState({
+          chartData: {
+            labels: names,
+            datasets: [
+              {
+                label: "Play Time",
+                data: times,
+              },
+            ],
+          },
+        });
+      });
   }
   render() {
     return (
